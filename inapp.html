@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detect In-App Browser Example</title>
+</head>
+
+<style>
+    .loader {
+        border: 16px solid #f3f3f3;
+        border-radius: 50%;
+        border-top: 16px solid blue;
+        border-bottom: 16px solid blue;
+        width: 120px;
+        height: 120px;
+        -webkit-animation: spin 2s linear infinite;
+        animation: spin 2s linear infinite;
+    }
+
+    @-webkit-keyframes spin {
+        0% {
+            -webkit-transform: rotate(0deg);
+        }
+
+        100% {
+            -webkit-transform: rotate(360deg);
+        }
+    }
+
+    @keyframes spin {
+        0% {
+            transform: rotate(0deg);
+        }
+
+        100% {
+            transform: rotate(360deg);
+        }
+    }
+</style>
+
+<body onload="openExternalBrowser()">
+    <script>
+        function isOpenInApp() {
+            var userAgent = navigator.userAgent;
+            // Check for iOS WKWebView
+            var isIOSWebView = /(iPhone|iPod|iPad).*AppleWebKit(?!.*Safari)/i.test(userAgent);
+
+            // Check for Android WebView
+            var isAndroidWebView = /(android).*(wv|webview)/i.test(userAgent);
+
+            return isIOSWebView || isAndroidWebView;
+        }
+
+        function openExternalBrowser() {
+            var url = window.location.href.toString().split("applink=")[1];
+            console.log(url);
+            var iOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+
+            if (!iOS && isOpenInApp()) {
+                /*   if (iOS) {
+                      // window.location.href = "https://" + url;
+                      //window.open("https://" + url, '_blank').focus();
+                      openInNewTab("https://" + url);
+  
+  
+                  } else { */
+                // Assume Android or other platform, open in Chrome
+                window.location.href = 'intent://' + url + '#Intent;package=com.android.chrome;scheme=https;end';
+                //}
+            } else {
+                window.location.href = "https://" + url; // Ex
+                // window.open("https://" + url, '_blank').focus();
+                // openInNewTab("https://" + url);
+            }
+        }
+
+        function openInNewTab(href) {
+            Object.assign(document.createElement('a'), {
+                target: '_blank',
+                rel: 'noopener noreferrer',
+                href: href,
+            }).click();
+        }
+    </script>
+
+    <div class="loader"></div>
+
+</body>
+
+</html>
